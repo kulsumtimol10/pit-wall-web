@@ -1,0 +1,236 @@
+:root {
+  --bg: #07090d;
+  --panel: rgba(13, 17, 23, 0.78);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #e6edf3;
+  --muted: #8b98a8;
+  --accent: #22d3ee;
+  --slow: #a855f7;
+  --brake: #ff3b3b;
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+code {
+  font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.center {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 16px;
+}
+
+.app {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  padding: 16px 18px;
+}
+
+.info {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: min(360px, calc(100vw - 32px));
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.driver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.team-chip {
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+.pos,
+.code {
+  font-weight: 700;
+}
+
+.lap-time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.swatch {
+  width: 22px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.swatch.gradient {
+  width: 40px;
+  background: linear-gradient(90deg, var(--slow), var(--accent));
+}
+
+.swatch.post {
+  width: 3px;
+  height: 14px;
+  background: #ffffff;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.hud {
+  position: absolute;
+  left: 16px;
+  bottom: 40px;
+  display: flex;
+  gap: 24px;
+}
+
+.hud div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.hud .label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hud .value {
+  font-size: 1.6rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud .unit {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.credit {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  left: 16px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.error {
+  max-width: 520px;
+  display: grid;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .info h1 {
+    font-size: 1.05rem;
+  }
+
+  .hud {
+    right: 16px;
+    bottom: 48px;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  /* Label above value so the three readouts fit a 320px screen. */
+  .hud div {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 4px;
+  }
+
+  .hud .label {
+    grid-column: 1 / -1;
+    font-size: 0.6rem;
+  }
+
+  .hud .value {
+    font-size: 1.2rem;
+  }
+
+  .credit {
+    text-align: left;
+  }
+}

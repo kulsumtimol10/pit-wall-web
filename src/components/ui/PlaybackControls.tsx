@@ -45,7 +45,7 @@ export function PlaybackControls() {
           </button>
         ))}
       </div>
-      <p className="hint">Space to play or pause · ← → to jump 2 s</p>
+      <p className="hint">Space to play or pause · ← → to jump 2 s · + − to zoom</p>
     </section>
   );
 }

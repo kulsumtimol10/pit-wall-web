@@ -2,9 +2,11 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useMemo } from 'react';
 import type { CatmullRomCurve3 } from 'three';
+import { CameraZoom } from '../components/3d/CameraZoom';
 import { Car } from '../components/3d/Car';
 import { FitCamera } from '../components/3d/FitCamera';
 import { PlaybackClock } from '../components/3d/PlaybackClock';
+import { TouchScroll } from '../components/3d/TouchScroll';
 import { TrackRibbon } from '../components/3d/TrackRibbon';
 import type { LapData } from '../lib/data-types';
 import type { TrackFrame, Vec3 } from '../lib/track';
@@ -42,9 +44,9 @@ export function GhostLapScene({ racers, frame, curve }: Props) {
   const [a, b] = racers;
 
   return (
-    <Canvas camera={{ fov: 45 }} dpr={[1, 2]}>
+    <Canvas className="scene" camera={{ fov: 45 }} dpr={[1, 2]}>
       <color attach="background" args={[BACKGROUND]} />
-      {/* near/far are set by FitCamera once it knows the camera distance */}
+      {/* near/far follow the camera's distance (CameraZoom) */}
       <fog attach="fog" args={[BACKGROUND, 1e6, 2e6]} />
       <ambientLight intensity={0.6} />
       <directionalLight position={[800, 1600, 600]} intensity={1.6} />
@@ -53,7 +55,10 @@ export function GhostLapScene({ racers, frame, curve }: Props) {
       <Car samples={b.lap.samples} curve={curve} colour={b.colour} offset={-CAR_SPLIT} />
       <Car samples={a.lap.samples} curve={curve} colour={a.colour} offset={CAR_SPLIT} />
       <PlaybackClock />
-      <OrbitControls makeDefault enableDamping maxPolarAngle={Math.PI / 2.1} />
+      {/* Wheel zoom only reaches the controls with Ctrl or ⌘ held (the page filters plain scrolling). */}
+      <OrbitControls makeDefault enableDamping zoomToCursor maxPolarAngle={Math.PI / 2.1} />
+      <TouchScroll />
+      <CameraZoom radius={bounds.radius} />
       <FitCamera center={bounds.center} radius={bounds.radius} />
     </Canvas>
   );

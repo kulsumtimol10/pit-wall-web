@@ -359,6 +359,86 @@ a:focus-visible {
   background: #ffffff;
 }
 
+/*
+ * One finger scrolls the page over the 3D view; two-finger gestures still reach
+ * the controls. !important beats the inline touch-action: none that
+ * OrbitControls sets each time it attaches.
+ */
+.scene {
+  touch-action: pan-y !important;
+}
+
+/* Zoom buttons, centred on the right edge of the 3D view */
+.zoom-controls {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zoom-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 18, 25, 0.9);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+}
+
+.zoom-controls button:hover {
+  background: #1b2430;
+}
+
+/* "Use Ctrl + scroll to zoom" - fades in over the 3D view, never blocks it */
+.zoom-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 9, 13, 0.5);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.zoom-hint.show {
+  opacity: 1;
+}
+
+.zoom-hint p {
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(13, 18, 25, 0.94);
+  border: 1px solid var(--border-strong);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Instructions for mouse users vs touch screens */
+.for-touch {
+  display: none !important;
+}
+
+@media (pointer: coarse) {
+  .for-mouse {
+    display: none !important;
+  }
+
+  .for-touch {
+    display: flex !important;
+  }
+
+  .zoom-controls button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 /* ---- side column ----------------------------------------------------------- */
 
 .side {

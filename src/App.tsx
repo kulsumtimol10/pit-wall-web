@@ -1,19 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import type { HudRefs } from './components/3d/CarMarker';
-import { LapInfo } from './components/ui/LapInfo';
+import { useEffect, useState } from 'react';
 import { DATA_URL, fetchIndex, fetchSession } from './lib/data';
 import type { SessionFile } from './lib/data-types';
-import { TrackScene } from './scenes/TrackScene';
+import { GhostLapPage } from './pages/GhostLap';
 
 type Load = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready'; data: SessionFile };
 
 export function App() {
   const [load, setLoad] = useState<Load>({ status: 'loading' });
-  const hud: HudRefs = {
-    clock: useRef<HTMLSpanElement>(null),
-    speed: useRef<HTMLSpanElement>(null),
-    gear: useRef<HTMLSpanElement>(null),
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -51,38 +44,9 @@ export function App() {
     );
   }
 
-  const { session, laps } = load.data;
-  const lap = laps[0];
+  if (load.data.laps.length < 2) {
+    return <p className="center muted">This session has only one lap so far; Ghost Lap needs two drivers.</p>;
+  }
 
-  return (
-    <main className="app">
-      <TrackScene lap={lap} hud={hud} />
-      <LapInfo session={session} lap={lap} />
-      <section className="panel hud" aria-label="Live telemetry">
-        <div>
-          <span className="label">Lap</span>
-          <span className="value" ref={hud.clock}>
-            000.0
-          </span>
-          <span className="unit">s</span>
-        </div>
-        <div>
-          <span className="label">Speed</span>
-          <span className="value" ref={hud.speed}>
-            0
-          </span>
-          <span className="unit">km/h</span>
-        </div>
-        <div>
-          <span className="label">Gear</span>
-          <span className="value" ref={hud.gear}>
-            –
-          </span>
-        </div>
-      </section>
-      <footer className="credit">
-        Data: OpenF1 (CC BY-NC-SA 4.0) · Unofficial fan project, not associated with Formula 1
-      </footer>
-    </main>
-  );
+  return <GhostLapPage data={load.data} />;
 }

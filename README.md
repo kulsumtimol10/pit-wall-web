@@ -4,8 +4,10 @@ The 3D website (frontend) for Pit Wall: real Formula 1 laps rendered in 3D with
 React Three Fiber. Race data comes from [pit-wall-data](../pit-wall-data), which
 publishes JSON files to GitHub Pages.
 
-Phase 0 shows one real lap (Lando Norris's pole lap, 2025 Belgian GP) as a 3D
-line coloured by speed, with a dot driving it in real time.
+Ghost Lap (Phase 1) replays two real qualifying laps on a 3D track with real
+elevation: Norris and Piastri, 2025 Belgian GP. One clock drives both cars,
+the live gap, each driver's speed, gear, throttle and brake, and the
+play/pause/scrub/speed controls (Space plays or pauses, ← → jump 2 s).
 
 ## Commands
 
@@ -14,6 +16,7 @@ npm install
 npm run dev         # http://localhost:5173
 npm run build       # type check + production build into dist/
 npm run typecheck
+npm test            # telemetry interpolation and gap maths
 ```
 
 ## Where the data comes from
@@ -32,11 +35,13 @@ The site reads `VITE_DATA_URL`:
 
 ```text
 src/
-├─ App.tsx                 loads the data, lays out the page
-├─ scenes/TrackScene.tsx   the 3D scene
-├─ components/3d/          TrackLine, CarMarker, FitCamera
-├─ components/ui/          LapInfo panel
-└─ lib/                    data loading, data types, track maths
+├─ App.tsx                   loads the data
+├─ pages/GhostLap.tsx        page layout, keyboard shortcuts
+├─ scenes/GhostLapScene.tsx  the 3D scene
+├─ components/3d/            TrackRibbon, Car, PlaybackClock, FitCamera
+├─ components/ui/            TopNav, GapCard, DriverCard, PlaybackControls
+├─ store/playback.ts         the shared replay clock (Zustand)
+└─ lib/                      data loading and types, telemetry, gap, track maths
 ```
 
 ## Credits

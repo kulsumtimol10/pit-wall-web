@@ -53,6 +53,8 @@ export function GhostLapPage({ data }: { data: SessionFile }) {
   // Plain scrolling over the 3D view scrolls the page instead of zooming; a
   // hint says how to zoom. Listening in the capture phase on the stage stops
   // the wheel event before OrbitControls (inside it) can zoom or block scrolling.
+  // On touch screens one finger scrolls the page (with a hint) and two fingers
+  // belong to the 3D view, so they must not scroll the page as well.
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -68,10 +70,11 @@ export function GhostLapPage({ data }: { data: SessionFile }) {
       show(`Use ${MODIFIER} + scroll to zoom the track`);
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 1) show('Use two fingers to rotate and zoom the track');
+      if (e.touches.length === 1) show('Use two fingers to move, zoom and rotate the track');
+      else if (e.cancelable) e.preventDefault();
     };
     stage.addEventListener('wheel', onWheel, { capture: true, passive: true });
-    stage.addEventListener('touchmove', onTouchMove, { passive: true });
+    stage.addEventListener('touchmove', onTouchMove, { passive: false });
     return () => {
       window.clearTimeout(timer);
       stage.removeEventListener('wheel', onWheel, { capture: true });
@@ -135,31 +138,34 @@ export function GhostLapPage({ data }: { data: SessionFile }) {
               </div>
             </div>
 
-            <div className="stage" ref={stageRef}>
-              <GhostLapScene racers={racers} frame={frame} curve={curve} />
-              <ConditionsStrip reading={conditionsA} title={`At ${a.lap.driver.code}'s lap`} />
-              <ZoomControls />
-              <div className="legend">
-                <span>
-                  <span className="swatch" style={{ background: '#ff3b3b' }} />
-                  Braking
-                </span>
-                <span>
-                  <span className="swatch gradient" />
-                  Slow to fast
-                </span>
-                <span>
-                  <span className="swatch post" />
-                  Start / finish
-                </span>
-                <span className="for-mouse">
-                  Height ×3 · drag to rotate · {MODIFIER} + scroll or + − to zoom
-                </span>
-                <span className="for-touch">Height ×3 · two fingers to rotate and zoom</span>
+            <div className="viewer">
+              <div className="stage" ref={stageRef}>
+                <GhostLapScene racers={racers} frame={frame} curve={curve} />
+                <ConditionsStrip reading={conditionsA} title={`At ${a.lap.driver.code}'s lap`} />
+                <ZoomControls />
+                <div className="legend">
+                  <span>
+                    <span className="swatch" style={{ background: '#ff3b3b' }} />
+                    Braking
+                  </span>
+                  <span>
+                    <span className="swatch gradient" />
+                    Slow to fast
+                  </span>
+                  <span>
+                    <span className="swatch post" />
+                    Start / finish
+                  </span>
+                  <span className="for-mouse">
+                    Height ×3 · drag to move · {MODIFIER} + drag to rotate · {MODIFIER} + scroll or + − to zoom
+                  </span>
+                  <span className="for-touch">Height ×3 · two fingers to move, zoom and rotate</span>
+                </div>
+                <div className={`zoom-hint${hint.visible ? ' show' : ''}`} role="status" aria-live="polite">
+                  {hint.text && <p>{hint.text}</p>}
+                </div>
               </div>
-              <div className={`zoom-hint${hint.visible ? ' show' : ''}`} role="status" aria-live="polite">
-                {hint.text && <p>{hint.text}</p>}
-              </div>
+              <PlaybackControls />
             </div>
           </section>
 
@@ -167,7 +173,6 @@ export function GhostLapPage({ data }: { data: SessionFile }) {
             <GapCard a={a} b={b} profile={profile} />
             <DriverCard racer={a} sessionBest={sessionBestSectors} conditions={conditionsA} utcOffset={session.utcOffset} />
             <DriverCard racer={b} sessionBest={sessionBestSectors} conditions={conditionsB} utcOffset={session.utcOffset} />
-            <PlaybackControls />
           </aside>
         </div>
 

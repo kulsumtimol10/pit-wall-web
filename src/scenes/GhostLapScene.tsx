@@ -1,12 +1,13 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useMemo } from 'react';
-import type { CatmullRomCurve3 } from 'three';
+import { MOUSE, type CatmullRomCurve3 } from 'three';
 import { CameraZoom } from '../components/3d/CameraZoom';
 import { Car } from '../components/3d/Car';
 import { FitCamera } from '../components/3d/FitCamera';
+import { PanLimit } from '../components/3d/PanLimit';
 import { PlaybackClock } from '../components/3d/PlaybackClock';
-import { TouchScroll } from '../components/3d/TouchScroll';
+import { TouchGestures } from '../components/3d/TouchGestures';
 import { TrackRibbon } from '../components/3d/TrackRibbon';
 import type { LapData } from '../lib/data-types';
 import type { TrackFrame, Vec3 } from '../lib/track';
@@ -14,6 +15,11 @@ import type { TrackFrame, Vec3 } from '../lib/track';
 const BACKGROUND = '#07090d';
 /** Metres either side of the racing line for the two cars (see Car's offset). */
 const CAR_SPLIT = 7;
+/**
+ * Map-style mouse: drag moves across the track, right-drag rotates. (The
+ * controls also rotate on Ctrl, ⌘ or Shift + drag.)
+ */
+const MOUSE_BUTTONS = { LEFT: MOUSE.PAN, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
 
 export interface Racer {
   lap: LapData;
@@ -55,9 +61,18 @@ export function GhostLapScene({ racers, frame, curve }: Props) {
       <Car samples={b.lap.samples} curve={curve} colour={b.colour} offset={-CAR_SPLIT} />
       <Car samples={a.lap.samples} curve={curve} colour={a.colour} offset={CAR_SPLIT} />
       <PlaybackClock />
-      {/* Wheel zoom only reaches the controls with Ctrl or ⌘ held (the page filters plain scrolling). */}
-      <OrbitControls makeDefault enableDamping zoomToCursor maxPolarAngle={Math.PI / 2.1} />
-      <TouchScroll />
+      {/* Wheel zoom only reaches the controls with Ctrl or ⌘ held (the page filters plain scrolling).
+          screenSpacePanning off: dragging slides along the ground instead of up and down the screen. */}
+      <OrbitControls
+        makeDefault
+        enableDamping
+        zoomToCursor
+        screenSpacePanning={false}
+        mouseButtons={MOUSE_BUTTONS}
+        maxPolarAngle={Math.PI / 2.1}
+      />
+      <TouchGestures />
+      <PanLimit center={bounds.center} radius={bounds.radius} />
       <CameraZoom radius={bounds.radius} />
       <FitCamera center={bounds.center} radius={bounds.radius} />
     </Canvas>

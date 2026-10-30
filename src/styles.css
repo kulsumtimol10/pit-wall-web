@@ -314,14 +314,23 @@ a:focus-visible {
   font-size: 13px;
 }
 
+/* The 3D view with its transport bar underneath, as one card */
+.viewer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
 .stage {
   position: relative;
   flex: 1;
-  min-height: 480px;
-  border-radius: 16px;
+  min-height: 420px;
+  border-radius: 15px 15px 0 0;
   overflow: hidden;
-  background: var(--panel);
-  border: 1px solid var(--border);
 }
 
 .legend {
@@ -362,10 +371,15 @@ a:focus-visible {
 /*
  * One finger scrolls the page over the 3D view; two-finger gestures still reach
  * the controls. !important beats the inline touch-action: none that
- * OrbitControls sets each time it attaches.
+ * OrbitControls sets each time it attaches. The hand cursor says "drag to move".
  */
 .scene {
   touch-action: pan-y !important;
+  cursor: grab;
+}
+
+.scene:active {
+  cursor: grabbing;
 }
 
 /* Zoom buttons, centred on the right edge of the 3D view */
@@ -662,19 +676,27 @@ a:focus-visible {
   background: var(--brake);
 }
 
-/* ---- playback ---------------------------------------------------------------- */
+/* ---- transport bar under the 3D view ------------------------------------------- */
 
-.playback {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.playback-row {
+/*
+ * Sticky to the bottom of the screen: when the 3D view runs past the fold (a
+ * phone, a short laptop screen) the bar rides the bottom edge, so play and
+ * pause are on the first screen; once the view's bottom scrolls up it settles
+ * back under it.
+ */
+.transport {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  container-type: inline-size;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 15px 15px;
+  background: var(--panel-raised);
+  box-shadow: 0 -10px 24px -14px rgba(0, 0, 0, 0.7);
 }
 
 .play {
@@ -689,11 +711,42 @@ a:focus-visible {
   place-items: center;
 }
 
+.restart,
+.rate-step {
+  flex-shrink: 0;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text);
+}
+
+.restart {
+  width: 40px;
+  display: grid;
+  place-items: center;
+}
+
+/* Shown instead of the four speed buttons when the bar is narrow */
+.rate-step {
+  display: none;
+  min-width: 52px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+.restart:hover,
+.rate-step:hover,
+.rates button:not([aria-pressed='true']):hover {
+  background: #1b2430;
+}
+
 .scrub {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .scrub input[type='range'] {
@@ -747,11 +800,12 @@ a:focus-visible {
 
 .rates {
   display: flex;
-  gap: 6px;
+  flex-shrink: 0;
+  gap: 4px;
 }
 
 .rates button {
-  flex: 1;
+  width: 48px;
   height: 36px;
   border-radius: 8px;
   border: 1px solid var(--border-strong);
@@ -768,9 +822,35 @@ a:focus-visible {
   font-weight: 600;
 }
 
-.hint {
-  font-size: 12px;
-  color: var(--muted);
+/* Below this the four speed buttons would squeeze the scrubber */
+@container (max-width: 560px) {
+  .rates {
+    display: none;
+  }
+
+  .rate-step {
+    display: block;
+  }
+}
+
+/* Smallest phones: room between the two times under the scrubber */
+@container (max-width: 300px) {
+  .scrub-times {
+    font-size: 11px;
+  }
+}
+
+/* Finger-sized transport buttons (after the rules above, so these win) */
+@media (pointer: coarse) {
+  .restart {
+    width: 44px;
+    height: 44px;
+  }
+
+  .rate-step,
+  .rates button {
+    height: 44px;
+  }
 }
 
 /* ---- below the replay: classification and conditions ------------------------- */
@@ -987,6 +1067,10 @@ td.gap {
     min-height: 0;
   }
 
+  .viewer {
+    flex: none;
+  }
+
   /* A definite height, not just a minimum, so the 3D canvas can fill it. */
   .stage {
     flex: none;
@@ -1001,10 +1085,6 @@ td.gap {
   .side {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  }
-
-  .playback {
-    margin-top: 0;
   }
 }
 

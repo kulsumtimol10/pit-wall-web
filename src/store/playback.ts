@@ -16,6 +16,8 @@ interface PlaybackState {
   seek: (time: number) => void;
   advance: (seconds: number) => void;
   toggle: () => void;
+  /** Back to the start line, playing */
+  restart: () => void;
   setRate: (rate: number) => void;
 }
 
@@ -33,8 +35,15 @@ export const usePlayback = create<PlaybackState>((set, get) => ({
     set({ time: next > duration ? 0 : next });
   },
   toggle: () => set({ playing: !get().playing }),
+  restart: () => set({ time: 0, playing: true }),
   setRate: (rate) => set({ rate }),
 }));
 
 /** The replay's length without the hold at the end, for display. */
 export const replayEnd = (duration: number) => Math.max(0, duration - END_HOLD_S);
+
+/** The speed after this one, wrapping round to the slowest (the one-button speed control). */
+export function nextRate(rate: number): number {
+  const i = RATES.indexOf(rate as (typeof RATES)[number]);
+  return RATES[(i + 1) % RATES.length];
+}

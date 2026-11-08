@@ -1,7 +1,7 @@
 const PAGES = ['The car', 'Ghost Lap', 'Season', 'Lights Out'] as const;
 
 /** Site header. Pages not built yet show as muted labels rather than dead links. */
-export function TopNav({ current }: { current: (typeof PAGES)[number] }) {
+export function TopNav({ current, season }: { current: (typeof PAGES)[number]; season: number }) {
   return (
     <header className="topnav">
       <a className="brand" href="/">
@@ -24,7 +24,7 @@ export function TopNav({ current }: { current: (typeof PAGES)[number] }) {
           ),
         )}
       </nav>
-      <span className="season-pill">Season 2025</span>
+      <span className="season-pill">Season {season}</span>
     </header>
   );
 }

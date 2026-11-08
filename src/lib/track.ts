@@ -58,7 +58,7 @@ export function trackCurve(s: LapSamples, f: TrackFrame): CatmullRomCurve3 {
   return curve;
 }
 
-/** Red under braking, otherwise purple (slowest) to cyan (fastest point of the lap). */
+/** Red under braking, otherwise purple (slowest) to cyan (fastest) across `range`. */
 export function speedColourAt(s: LapSamples, fraction: number, out: Color, range: [number, number]): Color {
   if (valueAtFraction(s, 'brake', fraction) >= 50) return out.copy(BRAKE_COLOUR);
   const v = valueAtFraction(s, 'speed', fraction);
@@ -72,18 +72,15 @@ export interface Ribbon {
   right: Vector3[];
 }
 
-/** A flat track surface `width` metres wide following the curve, coloured by the lap's speed. */
-export function buildRibbon(curve: CatmullRomCurve3, s: LapSamples, width: number, segments: number): Ribbon {
+/** A flat track surface `width` metres wide following the curve. */
+export function buildRibbon(curve: CatmullRomCurve3, width: number, segments: number): Ribbon {
   const positions = new Float32Array((segments + 1) * 2 * 3);
-  const colours = new Float32Array((segments + 1) * 2 * 3);
   const indices: number[] = [];
   const left: Vector3[] = [];
   const right: Vector3[] = [];
   const p = new Vector3();
   const tangent = new Vector3();
   const side = new Vector3();
-  const colour = new Color();
-  const range: [number, number] = [Math.min(...s.speed), Math.max(...s.speed)];
 
   for (let i = 0; i <= segments; i++) {
     const u = (i / segments) % 1;
@@ -95,8 +92,6 @@ export function buildRibbon(curve: CatmullRomCurve3, s: LapSamples, width: numbe
     left.push(l);
     right.push(r);
     positions.set([l.x, l.y, l.z, r.x, r.y, r.z], i * 6);
-    speedColourAt(s, i / segments, colour, range);
-    colours.set([colour.r, colour.g, colour.b, colour.r, colour.g, colour.b], i * 6);
     if (i < segments) {
       const a = i * 2;
       indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
@@ -105,7 +100,6 @@ export function buildRibbon(curve: CatmullRomCurve3, s: LapSamples, width: numbe
 
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new BufferAttribute(colours, 3));
   geometry.setIndex(indices);
   return { geometry, left, right };
 }

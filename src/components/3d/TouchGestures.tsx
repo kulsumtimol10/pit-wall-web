@@ -12,6 +12,8 @@ interface TouchControls {
   touches: { ONE?: TOUCH; TWO?: TOUCH };
   target: Vector3;
   domElement?: HTMLElement;
+  /** Off while another camera mode is filming (CameraRig) */
+  enabled: boolean;
 }
 
 /**
@@ -61,7 +63,7 @@ export function TouchGestures() {
       const turn = turnBetween(lastAngle, angle);
       lastAngle = angle;
       twisted += turn;
-      if (!turning && Math.abs(twisted) < TWIST_START) return;
+      if (!controls.enabled || (!turning && Math.abs(twisted) < TWIST_START)) return;
       turning = true;
       // Fingers twisting clockwise turn the track clockwise with them. The
       // controls pick up the new camera position in their own update.

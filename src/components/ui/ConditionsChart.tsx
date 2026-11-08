@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { WeatherReading } from '../../lib/data-types';
 import { compass, localClock, localMinutes } from '../../lib/weather';
+import { useWidth } from './useWidth';
 
 export interface LapMarker {
   code: string;
@@ -24,20 +25,6 @@ const M = { top: 48, right: 16, bottom: 28, left: 40 };
 const LABEL_ROWS = [16, 34];
 /** Rough label width per character at 11px, for collision checks. */
 const CHAR_PX = 6.8;
-
-function useWidth() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    setWidth(el.getBoundingClientRect().width);
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, width] as const;
-}
 
 const hhmm = (minutes: number) =>
   `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(Math.round(minutes % 60)).padStart(2, '0')}`;
@@ -127,6 +114,7 @@ export function ConditionsChart({ readings, utcOffset, laps }: Props) {
         className="chart"
         tabIndex={0}
         role="group"
+        data-own-keys
         aria-label="Track temperature chart. Use the arrow keys to read each minute."
         onKeyDown={onKeyDown}
         onFocus={() => setActive((i) => i ?? 0)}

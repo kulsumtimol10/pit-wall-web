@@ -48,6 +48,24 @@ describe('view store', () => {
     zoomOut();
     expect(takeZoom()).toBeCloseTo(1);
   });
+  it('zooms by any factor, for Ctrl + scroll outside overview', () => {
+    useView.getState().zoomBy(0.9);
+    useView.getState().zoomBy(0.9);
+    expect(useView.getState().takeZoom()).toBeCloseTo(0.81);
+  });
+  it('fits the whole track again when the camera goes back to overview', () => {
+    const before = useView.getState().resetToken;
+    useView.getState().setCamera('chase');
+    expect(useView.getState().resetToken).toBe(before);
+    useView.getState().setCamera('overview');
+    expect(useView.getState().resetToken).toBe(before + 1);
+  });
+  it('colours trails by speed until the visitor picks driver colours', () => {
+    expect(useView.getState().trailColours).toBe('speed');
+    useView.getState().setTrailColours('driver');
+    expect(useView.getState().trailColours).toBe('driver');
+    useView.getState().setTrailColours('speed');
+  });
   it('clears pending zoom when the view is reset', () => {
     const before = useView.getState().resetToken;
     useView.getState().zoomIn();

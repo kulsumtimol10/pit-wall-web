@@ -271,12 +271,12 @@ a:focus-visible {
   color: var(--muted);
 }
 
-/* Weather line over the 3D view */
+/* Weather line over the 3D view, clear of the camera buttons on its right */
 .conditions-strip {
   position: absolute;
   top: 14px;
   left: 16px;
-  right: 16px;
+  right: 370px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -368,6 +368,42 @@ a:focus-visible {
   background: #ffffff;
 }
 
+/* Speed / Driver switch for the trail colours: the one clickable part of the legend */
+.trail-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 2px 2px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 18, 25, 0.9);
+  pointer-events: auto;
+}
+
+.trail-switch > span {
+  margin-right: 6px;
+}
+
+.trail-switch button {
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.trail-switch button:hover {
+  color: var(--text);
+}
+
+.trail-switch button[aria-pressed='true'] {
+  background: rgba(34, 211, 238, 0.14);
+  color: var(--text);
+  font-weight: 600;
+}
+
 /*
  * One finger scrolls the page over the 3D view; two-finger gestures still reach
  * the controls. !important beats the inline touch-action: none that
@@ -380,6 +416,76 @@ a:focus-visible {
 
 .scene:active {
   cursor: grabbing;
+}
+
+/* Camera buttons, top right of the 3D view, with the chase camera's "following" toggle under them */
+.camera-switcher {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.camera-modes {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 18, 25, 0.92);
+}
+
+.camera-modes button {
+  height: 34px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.camera-modes button:hover {
+  color: var(--text);
+}
+
+.camera-modes button[aria-pressed='true'] {
+  background: rgba(34, 211, 238, 0.14);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.camera-modes button[aria-pressed='true'] svg {
+  color: var(--accent);
+}
+
+.camera-switcher .follow {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 18, 25, 0.92);
+  color: var(--text-soft);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.camera-switcher .follow:hover {
+  color: var(--text);
+}
+
+.camera-switcher .follow .dot {
+  width: 8px;
+  height: 8px;
 }
 
 /* Zoom buttons, centred on the right edge of the 3D view */
@@ -450,6 +556,20 @@ a:focus-visible {
   .zoom-controls button {
     width: 44px;
     height: 44px;
+  }
+
+  .trail-switch button {
+    height: 40px;
+    padding: 0 14px;
+  }
+
+  .camera-modes button {
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .camera-switcher .follow {
+    height: 40px;
   }
 }
 
@@ -1054,6 +1174,671 @@ td.gap {
   margin-top: 10px;
 }
 
+/* Lap comparison: speed, throttle, brake and gap by distance */
+
+.lap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.lap-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lap-legend .key {
+  width: 18px;
+  height: 2px;
+}
+
+.sector-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.sector-chips li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+}
+
+.sector-chips li.lap {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.sector-chips .dot {
+  width: 8px;
+  height: 8px;
+}
+
+.chart .row-title {
+  fill: var(--text-soft);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.chart .sector-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.chart .divider {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.chart .zero,
+.chart .axis {
+  stroke: #2a3543;
+  stroke-width: 1;
+}
+
+.chart .end-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.chart .area-label {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.lap-tip {
+  top: 34px;
+  min-width: min(260px, calc(100% - 16px));
+}
+
+/* ---- race and driver picker ------------------------------------------------------ */
+
+.eyebrow-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+.eyebrow-button:hover {
+  color: #67e8f9;
+}
+
+button.chip {
+  color: var(--text);
+}
+
+button.chip:hover {
+  border-color: #33404f;
+}
+
+.chip .chevron {
+  color: var(--muted);
+}
+
+.picker {
+  width: min(1240px, calc(100vw - 48px));
+  max-width: none;
+  height: min(780px, calc(100dvh - 48px));
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+  overscroll-behavior: contain;
+}
+
+.picker[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.picker::backdrop {
+  background: radial-gradient(ellipse at 60% 40%, rgba(34, 211, 238, 0.06), rgba(4, 6, 9, 0.9) 60%);
+}
+
+.picker h2,
+.picker h3 {
+  margin: 0;
+}
+
+.picker-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px 18px;
+}
+
+.picker-head h2 {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.picker-head p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.picker-close {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-soft);
+}
+
+.picker-close:hover {
+  border-color: #33404f;
+  color: var(--text);
+}
+
+.picker-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 440px) 180px minmax(0, 1fr);
+  gap: 24px;
+  padding: 0 28px;
+}
+
+.picker-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.picker-col-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 36px;
+}
+
+.picker-step {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.season-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+}
+
+.season-tabs button {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.season-tabs button[aria-pressed='true'] {
+  background: rgba(34, 211, 238, 0.14);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Scrolling lists keep a little padding so focus outlines aren't clipped. */
+.race-grid,
+.driver-list {
+  margin: -4px;
+  padding: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.race-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+}
+
+.race-tile {
+  position: relative;
+  height: 84px;
+  padding: 10px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-raised);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.race-tile:hover {
+  border-color: var(--border-strong);
+}
+
+.race-tile[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.race-tile .round {
+  position: absolute;
+  left: 7px;
+  top: 5px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.race-tile svg {
+  flex-shrink: 0;
+}
+
+.race-tile path {
+  fill: none;
+  stroke: #5f6e80;
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+}
+
+.race-tile[aria-pressed='true'] path {
+  stroke: var(--accent);
+}
+
+.race-tile .name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-option {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+}
+
+.session-option strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.session-option span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.session-option[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.session-option:disabled {
+  border-style: dashed;
+  color: var(--muted);
+  cursor: default;
+}
+
+.session-option:disabled strong {
+  font-weight: 500;
+}
+
+.picker-note {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.picker-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.driver-slots {
+  display: flex;
+  gap: 6px;
+}
+
+.driver-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.driver-slot .dot {
+  width: 8px;
+  height: 8px;
+}
+
+.driver-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.driver-row {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 8px 0 4px;
+  display: grid;
+  grid-template-columns: 20px 22px 4px 40px minmax(0, 1fr) 110px 66px 24px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.driver-row:hover {
+  background: rgba(230, 237, 243, 0.04);
+}
+
+.driver-row .badge {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #2a3543;
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.driver-row .position {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.driver-row .team-bar {
+  height: 14px;
+}
+
+.driver-row .driver-name,
+.driver-row .driver-team {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.driver-row .driver-team {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.driver-row .lap-time {
+  font-size: 12px;
+  color: var(--text-soft);
+  text-align: right;
+}
+
+.driver-row .segment {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.picker-loading {
+  padding: 8px 4px;
+  font-size: 13px;
+}
+
+.picker-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+}
+
+.picker-summary {
+  min-width: 0;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.picker-summary strong {
+  color: var(--text);
+}
+
+.picker-error {
+  color: #ff8a8a;
+}
+
+.picker-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.button-secondary,
+.button-primary {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.button-secondary {
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.button-secondary:hover {
+  border-color: #33404f;
+  color: var(--text);
+}
+
+.button-primary {
+  padding: 0 20px;
+  border: 0;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.button-primary:hover {
+  background: #67e8f9;
+}
+
+.button-primary:disabled {
+  background: var(--border);
+  color: var(--muted);
+  cursor: default;
+}
+
+/* Tablets: races and sessions on the left, drivers on the right */
+@media (max-width: 1100px) {
+  /* The race grid takes the height it needs (scrolling if that's too much); sessions sit right below it. */
+  .picker-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, auto) minmax(auto, 1fr);
+    grid-template-areas:
+      'races drivers'
+      'sessions drivers';
+  }
+
+  .picker-races {
+    grid-area: races;
+  }
+
+  /* Never squeezed below its content: the race grid scrolls instead. */
+  .picker-sessions {
+    grid-area: sessions;
+    align-self: start;
+    min-height: auto;
+  }
+
+  .picker-drivers {
+    grid-area: drivers;
+  }
+
+  .session-options {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .session-option {
+    flex: 1 1 140px;
+  }
+
+  .driver-row {
+    grid-template-columns: 20px 22px 4px 40px minmax(0, 1fr) 66px 24px;
+  }
+
+  .driver-row .driver-team {
+    display: none;
+  }
+}
+
+/* Phones: full screen, one scrolling column */
+@media (max-width: 720px) {
+  .picker {
+    width: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .picker-head {
+    padding: 16px;
+  }
+
+  .picker-head h2 {
+    font-size: 20px;
+  }
+
+  .picker-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 16px 8px;
+    overflow-y: auto;
+  }
+
+  .picker-col {
+    flex-shrink: 0;
+  }
+
+  .race-grid,
+  .driver-list {
+    overflow: visible;
+  }
+
+  .picker-foot {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 0;
+    padding: 12px 16px;
+  }
+
+  .picker-summary {
+    flex: 1 1 100%;
+    font-size: 13px;
+  }
+
+  .picker-actions {
+    flex: 1;
+  }
+
+  .picker-actions .button-primary {
+    flex: 1;
+  }
+}
+
+@media (max-width: 420px) {
+  .race-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .driver-row {
+    grid-template-columns: 20px 22px 4px 36px minmax(0, 1fr) 62px 22px;
+    gap: 6px;
+  }
+}
+
+@media (pointer: coarse) {
+  .driver-row {
+    height: 40px;
+  }
+
+  .season-tabs button {
+    height: 36px;
+  }
+}
+
 /* ---- smaller screens ----------------------------------------------------------- */
 
 @media (max-width: 1100px) {
@@ -1104,6 +1889,15 @@ td.gap {
 
   .session-head h1 {
     font-size: 22px;
+  }
+
+  /* Icons only for the camera buttons; the weather strip wraps in the space left */
+  .camera-modes .label {
+    display: none;
+  }
+
+  .conditions-strip {
+    right: 190px;
   }
 
   .gap-value {

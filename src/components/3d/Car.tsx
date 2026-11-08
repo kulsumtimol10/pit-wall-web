@@ -1,19 +1,12 @@
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import { DoubleSide, Vector3, type CatmullRomCurve3, type Group } from 'three';
+import { Color, DoubleSide, Vector3, type CatmullRomCurve3, type Group } from 'three';
+import { newCarPlace, placeCar } from '../../lib/carPlace';
 import type { LapSamples } from '../../lib/data-types';
-import { stateAtTime } from '../../lib/telemetry';
-import { UP } from '../../lib/track';
 import { usePlayback } from '../../store/playback';
 
-/**
- * A real car is ~5.6 m long on a ~2.5 km wide track, so at true size it is a
- * pixel or two from the overview camera. Cars are scaled with camera distance
- * instead: roughly constant on screen when zoomed out, and back to life size
- * (scale 1) when the camera comes close.
- */
-const METRES_PER_SCALE = 160;
-const MAX_SCALE = 30;
+/** The ring under the car is drawn brighter than its colour so the bloom pass gives each car a halo. */
+const RING_GLOW = 1.8;
 
 interface Props {
   samples: LapSamples;
@@ -30,28 +23,24 @@ interface Props {
 /** A low-poly car that drives its lap on the shared playback clock. */
 export function Car({ samples, curve, colour, offset }: Props) {
   const ref = useRef<Group>(null);
-  const v = useMemo(() => ({ p: new Vector3(), tangent: new Vector3(), side: new Vector3(), ahead: new Vector3() }), []);
+  const place = useMemo(newCarPlace, []);
+  const ahead = useMemo(() => new Vector3(), []);
+  const ringColour = useMemo(() => new Color(colour).multiplyScalar(RING_GLOW), [colour]);
 
   useFrame(({ camera }) => {
     const car = ref.current;
     if (!car) return;
-    const { fraction } = stateAtTime(samples, usePlayback.getState().time);
-    const u = Math.min(fraction, 0.99999);
-    curve.getPointAt(u, v.p);
-    curve.getTangentAt(u, v.tangent);
-    const scale = Math.min(MAX_SCALE, Math.max(1, camera.position.distanceTo(v.p) / METRES_PER_SCALE));
-    v.side.crossVectors(v.tangent, UP).normalize();
-    v.p.addScaledVector(v.side, offset * Math.min(scale, 4));
-    car.position.copy(v.p);
-    car.scale.setScalar(scale);
-    car.lookAt(v.ahead.copy(v.p).add(v.tangent));
+    placeCar(samples, curve, offset, usePlayback.getState().time, camera.position, place);
+    car.position.copy(place.position);
+    car.scale.setScalar(place.scale);
+    car.lookAt(ahead.copy(place.position).add(place.tangent));
   });
 
   return (
     <group ref={ref}>
       <mesh rotation-x={-Math.PI / 2} position-y={0.05}>
         <ringGeometry args={[2.6, 3.4, 48]} />
-        <meshBasicMaterial color={colour} transparent opacity={0.7} side={DoubleSide} depthWrite={false} />
+        <meshBasicMaterial color={ringColour} toneMapped={false} transparent opacity={0.7} side={DoubleSide} depthWrite={false} />
       </mesh>
       <CarBody colour={colour} />
     </group>

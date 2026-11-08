@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "generatedAt": "2026-11-02T19:15:58.703Z",
+  "events": [
+    {
+      "key": 1265,
+      "year": 2025,
+      "round": 13,
+      "meeting": "Belgian Grand Prix",
+      "circuit": "Spa-Francorchamps",
+      "country": "Belgium",
+      "date": "2025-07-26T14:00:00.000Z",
+      "outline": "M23.4 5.9L21.8 3.6L20.4 1.3L20 0.1L20.8 0L22.9 1.1L25.5 3L27.8 5.3L31 8.2L32.8 12.1L34.6 14.6L35.7 16.9L36.7 19.9L37.8 23.3L39.1 27L39.9 30.2L38.9 31.6L39.4 33.7L37.7 35.8L35.4 37.4L33.6 38L33.2 36.9L34.9 35.6L35.8 33.9L35.1 32.1L34.3 29.2L33.7 26.6L30.9 24.5L28.1 26.5L27 29.7L25.7 32.6L23 32.3L21.1 34L19.6 36.4L18 36L16.1 33.6L16.8 31.1L18.8 28.6L21.2 26.9L24 25.2L25.7 23.1L26.8 19.8L25.8 16.4L24.6 12.9L24.3 10.2L24.7 9.5L25.3 9L24.6 7.7Z",
+      "sessions": [
+        {
+          "key": 9935,
+          "meetingKey": 1265,
+          "year": 2025,
+          "meeting": "Belgian Grand Prix",
+          "name": "Qualifying",
+          "circuit": "Spa-Francorchamps",
+          "country": "Belgium",
+          "date": "2025-07-26T14:00:00.000Z",
+          "utcOffset": "+02:00",
+          "file": "sessions/9935.json",
+          "drivers": [
+            "NOR",
+            "PIA"
+          ]
+        }
+      ]
+    }
+  ]
+}

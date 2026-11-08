@@ -62,7 +62,7 @@ export function timeAtFraction(s: LapSamples, fraction: number): number {
 }
 
 /** A telemetry channel's value at a fraction (0-1) of the lap distance. */
-export function valueAtFraction(s: LapSamples, channel: 'speed' | 'throttle' | 'brake', fraction: number): number {
+export function valueAtFraction(s: LapSamples, channel: 'speed' | 'throttle' | 'brake' | 'gear', fraction: number): number {
   const [i, k] = bracket(s.d, clamp(fraction, 0, 1) * s.d[s.d.length - 1]);
   return lerpAt(s[channel], i, k);
 }

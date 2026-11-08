@@ -38,6 +38,11 @@ export function CameraZoom({ radius }: { radius: number }) {
 
   useFrame((_, delta) => {
     if (!controls) return;
+    // The other camera modes zoom and fog the scene themselves (CameraRig).
+    if (useView.getState().camera !== 'overview') {
+      goal.current = null;
+      return;
+    }
     offset.copy(camera.position).sub(controls.target);
     let distance = offset.length();
 
